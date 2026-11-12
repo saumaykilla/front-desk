@@ -131,7 +131,7 @@ front-desk-agent/
 
 ### 4.1 Backend — FastAPI
 
-The backend owns application business logic and external integrations.
+The backend owns application business logic and external integrations. It currently exposes process health and an authenticated guest-booking lookup operation; later hospitality workflows remain unimplemented.
 
 Responsibilities:
 
@@ -164,7 +164,7 @@ Responsibilities:
 - Recover gracefully from tool failures.
 - Escalate unresolved requests to front-desk staff.
 
-The voice agent coordinates conversations. It does not directly own PMS integrations or critical business logic.
+The voice agent coordinates conversations. It does not directly own PMS integrations or critical business logic. Its guest-booking lookup tool receives the selected `nolita` / `nap_york` property from LiveKit job metadata and calls the authenticated backend; Mews credentials remain backend-only.
 
 ### 4.3 Web Application — Next.js
 
@@ -217,11 +217,11 @@ All callable voice-agent tools must live in:
 
 Each tool should have one focused responsibility and a typed input/output contract.
 
-Initial proposed tools:
+Initial proposed tools (only `find_guest_booking` is currently implemented):
 
 | Tool                    | Responsibility                                  |
 | ----------------------- | ----------------------------------------------- |
-| `find_reservation`      | Find a reservation using guest-provided details |
+| `find_guest_booking`   | Locate a current reservation using a confirmed name or confirmation number and check-in date |
 | `get_guest_reservation` | Retrieve reservation information                |
 | `verify_guest`          | Verify the guest's identity                     |
 | `get_checkin_status`    | Retrieve check-in status                        |
@@ -348,7 +348,9 @@ Each application component should have its own environment configuration.
 
 Backend configuration may include:
 
-- Mews API credentials and endpoint configuration.
+- Per-property Mews API URLs, ClientTokens, and AccessTokens for Nolita and Nap York.
+- `AGENT_API_TOKEN`, shared with the voice agent as `BACKEND_API_TOKEN`.
+- The lookup date timezone, currently `America/New_York` for both properties.
 - Database configuration, if introduced.
 - Authentication and security settings.
 
@@ -357,6 +359,7 @@ Voice-agent configuration may include:
 - LiveKit credentials.
 - Google API credentials.
 - Backend API URL.
+- `BACKEND_API_TOKEN` matching the backend agent token.
 
 Web configuration may include:
 

@@ -1,4 +1,5 @@
-"""Shared FastAPI dependencies.
+from app.services.guest_booking_service import GuestBookingService
 
-No authentication dependencies are registered yet.
-"""
+
+def get_guest_booking_service() -> GuestBookingService:
+    return GuestBookingService()

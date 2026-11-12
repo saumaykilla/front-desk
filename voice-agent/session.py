@@ -32,10 +32,14 @@ def build_session(settings: Settings) -> AgentSession:
     return AgentSession(llm=build_realtime_model(settings))
 
 
-async def start_session(ctx: JobContext, settings: Settings) -> AgentSession:
+async def start_session(
+    ctx: JobContext,
+    settings: Settings,
+    property_id: str | None,
+) -> AgentSession:
     session = build_session(settings)
     await session.start(
         room=ctx.room,
-        agent=FrontDeskAgent(),
+        agent=FrontDeskAgent(settings=settings, property_id=property_id),
     )
     return session

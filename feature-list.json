@@ -42,6 +42,39 @@
       ],
       "notes": "Approved foundation setup verified. Web build script uses the supported Webpack builder because Turbopack cannot create its worker process in this environment.",
       "plan": "plans/approved/application-foundation.md"
+    },
+    {
+      "id": "BOOKING-001",
+      "priority": 2,
+      "area": "guest-reservations",
+      "title": "Identify guest and retrieve current booking",
+      "user_visible_behavior": "The voice agent confirms the guest's name spelling or collects a confirmation number, confirms whether check-in is today or an earlier New York date, and retrieves the matching current reservation from the selected Nolita or Nap York Mews account.",
+      "status": "in_progress",
+      "verification": [
+        "Backend unit and route tests: 27 passed.",
+        "Voice-agent tool and readiness tests: 11 passed.",
+        "Web lint, typecheck, and production build passed.",
+        "Live Mews smoke test remains outstanding because property API URLs and credentials are not configured."
+      ],
+      "evidence": [
+        "backend/.venv/bin/python -m pytest -q: 27 passed, 1 Starlette/httpx deprecation warning.",
+        "voice-agent/.venv/bin/python -m pytest -q: 11 passed.",
+        "cd web && npm run lint: passed.",
+        "cd web && npm run typecheck: passed.",
+        "cd web && npm run build: passed with Webpack.",
+        "./init.sh completed successfully earlier in this implementation session.",
+        "No live Mews API call was made; .env.example values are blank."
+      ],
+      "acceptance_criteria": [
+        "The agent waits for trusted property context, one confirmed lookup key, and a confirmed check-in date before lookup.",
+        "Name lookup reads back spelling for confirmation or asks the guest to spell an unclear name.",
+        "The backend maps the allowlisted property to only its configured Mews credentials and rejects unauthorized agent requests.",
+        "Confirmation-number and exact normalized-name lookup return explicit matched, no-match, ambiguous, or unavailable outcomes.",
+        "Current reservations include eligible Started or Confirmed bookings on the supplied New York local check-in date; cancelled and processed bookings are excluded.",
+        "Mews credentials and raw responses are not exposed in frontend, voice output, or logs.",
+        "Automated backend and voice-agent tests pass, and setup/integration documentation is current."
+      ],
+      "plan": "plans/approved/guest-identification-and-booking-lookup.md"
     }
   ]
 }

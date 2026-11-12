@@ -13,6 +13,7 @@ import sys
 from dotenv import load_dotenv
 from livekit.agents import AgentServer, JobContext, cli
 
+from config.property_context import property_from_job_metadata
 from config.settings import assess_readiness, get_settings
 from session import start_session
 
@@ -27,7 +28,8 @@ def create_server() -> AgentServer:
 
     @server.rtc_session(agent_name=settings.agent_name)
     async def entrypoint(ctx: JobContext) -> None:
-        await start_session(ctx, get_settings())
+        property_id = property_from_job_metadata(ctx.job.metadata)
+        await start_session(ctx, get_settings(), property_id)
 
     return server
 
@@ -40,6 +42,7 @@ def readiness_payload() -> dict[str, object]:
             "LIVEKIT_API_SECRET": get_settings().livekit_api_secret,
             "GOOGLE_API_KEY": get_settings().google_api_key,
             "BACKEND_API_URL": get_settings().backend_api_url,
+            "BACKEND_API_TOKEN": get_settings().backend_api_token,
         }
     )
     return report.model_dump()

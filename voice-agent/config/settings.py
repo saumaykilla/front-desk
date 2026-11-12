@@ -12,6 +12,7 @@ REQUIRED_ENV_VARS = (
     "LIVEKIT_API_SECRET",
     "GOOGLE_API_KEY",
     "BACKEND_API_URL",
+    "BACKEND_API_TOKEN",
 )
 
 
@@ -23,6 +24,7 @@ class Settings(BaseSettings):
     livekit_api_secret: str = ""
     google_api_key: str = ""
     backend_api_url: str = ""
+    backend_api_token: str = ""
     google_realtime_model: str = ""
     google_realtime_voice: str = "Puck"
     agent_name: str = "front-desk"

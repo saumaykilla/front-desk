@@ -79,3 +79,39 @@ Start by reading AGENTS.md, progress.md, feature_list.json, and this handoff. Fi
 - Turbopack build is incompatible with this execution environment because it cannot create/bind its worker process. Switched the web `build` script to Next.js's supported Webpack builder.
 - `cd web && npm run build` now passes. Backend tests (2), voice-agent tests (6), web typecheck, and lint also pass as recorded above.
 - Feature status is now `passing`; there are no remaining implementation tasks for the approved foundation plan.
+
+### Current Handoff — 2026-11-12 (implementation)
+
+#### Current state
+
+- Current feature: `BOOKING-001`, guest identification and current Mews booking lookup for Nolita and Nap York.
+- Status: implementation complete; automated checks pass. The feature remains `in_progress` until a credentialed live Mews smoke test verifies the configured property endpoints and access scopes.
+- Approved plan: `plans/approved/guest-identification-and-booking-lookup.md`.
+- Last completed task: final backend, voice-agent, web, and repository diff checks; feature evidence and this handoff updated.
+
+#### Changes made
+
+- Backend: added the bearer-authenticated `POST /guest-bookings/lookup` route, strict schemas, separate per-property Mews config, and read-only Mews Connector client with New York local-date filtering, pagination, bounded 429 retry, customer/companion name matching, and safe error mapping.
+- Voice agent: added the `find_guest_booking` tool, persistent authenticated backend client, allowlisted property context from LiveKit JSON job metadata, New York current-date prompt context, and spelling/date confirmation instructions.
+- Documentation and secret-free env examples now cover `ClientToken`, `AccessToken`, property-specific settings, shared agent/backend bearer auth, and required job metadata.
+- No real credentials were added.
+
+#### Verification
+
+- `backend/.venv/bin/python -m pytest -q` — 27 passed, with one Starlette/httpx deprecation warning.
+- `voice-agent/.venv/bin/python -m pytest -q` — 11 passed.
+- `cd web && npm run lint` — passed.
+- `cd web && npm run typecheck` — passed.
+- `cd web && npm run build` — passed with Webpack.
+- `./init.sh` — completed successfully earlier in the implementation session.
+- No live Mews calls were made because actual API URLs and credentials are not configured.
+
+#### Outstanding work
+
+- Configure the backend with Nolita and Nap York Mews API URLs, `ClientToken`, and `AccessToken`; configure matching backend/voice-agent bearer secrets.
+- Run a credentialed smoke test for both property accounts and verify the deployed Connector API response contracts and enabled operation permissions.
+- Keep `BOOKING-001` `in_progress` until that check passes; then record evidence and update status according to `feature_list.json` rules.
+
+#### Next session instruction
+
+Once sandbox credentials and property API base URLs are available, configure them only in local/runtime secret storage and run a read-only lookup for each property. Validate confirmation-number and exact full-name matches, a previous-day in-house reservation, and an unavailable/authentication failure. Record results without logging guest details or tokens, then update `feature_list.json`, `progress.md`, and this handoff.

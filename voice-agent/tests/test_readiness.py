@@ -20,6 +20,7 @@ def test_readiness_reports_every_missing_variable() -> None:
         "LIVEKIT_API_SECRET",
         "GOOGLE_API_KEY",
         "BACKEND_API_URL",
+        "BACKEND_API_TOKEN",
     ]
 
 
@@ -31,6 +32,7 @@ def test_readiness_is_ready_when_required_values_are_present() -> None:
             "LIVEKIT_API_SECRET": "secret",
             "GOOGLE_API_KEY": "google",
             "BACKEND_API_URL": "http://127.0.0.1:8000",
+            "BACKEND_API_TOKEN": "agent-token",
         }
     )
 
@@ -47,17 +49,26 @@ def test_blank_values_count_as_missing() -> None:
             "LIVEKIT_API_SECRET": "secret",
             "GOOGLE_API_KEY": "google",
             "BACKEND_API_URL": "http://127.0.0.1:8000",
+            "BACKEND_API_TOKEN": "agent-token",
         }
     )
 
     assert report.missing == ["LIVEKIT_URL"]
 
 
-def test_system_prompt_loads_and_tools_are_empty() -> None:
+def test_system_prompt_and_guest_booking_tool_are_registered() -> None:
     prompt = load_system_prompt()
 
-    assert "placeholder voice agent" in prompt
-    assert load_tools() == ()
+    assert "confirm the spelling" in prompt
+    assert "check-in date confirmed" in prompt
+
+    class StubBackendClient:
+        async def lookup_booking(self, **_kwargs):
+            return {"outcome": "no_match", "matches": []}
+
+    tools = load_tools("nolita", StubBackendClient())
+    assert len(tools) == 1
+    assert tools[0].id == "find_guest_booking"
 
 
 def test_worker_exits_before_startup_when_credentials_are_missing(capsys, monkeypatch) -> None:
@@ -66,6 +77,7 @@ def test_worker_exits_before_startup_when_credentials_are_missing(capsys, monkey
     monkeypatch.delenv("LIVEKIT_API_SECRET", raising=False)
     monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     monkeypatch.delenv("BACKEND_API_URL", raising=False)
+    monkeypatch.delenv("BACKEND_API_TOKEN", raising=False)
 
     from config.settings import get_settings
 
@@ -86,6 +98,7 @@ def test_readiness_command_prints_not_connected(capsys, monkeypatch) -> None:
         "LIVEKIT_API_SECRET",
         "GOOGLE_API_KEY",
         "BACKEND_API_URL",
+        "BACKEND_API_TOKEN",
     ):
         monkeypatch.setenv(name, "present")
 

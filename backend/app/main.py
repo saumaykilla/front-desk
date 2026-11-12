@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.guest_bookings import router as guest_bookings_router
 from app.api.routes.health import router as health_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
@@ -21,6 +22,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     application.include_router(health_router)
+    application.include_router(guest_bookings_router)
     return application
 
 

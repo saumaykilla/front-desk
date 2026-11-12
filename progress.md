@@ -89,6 +89,26 @@ These are initial product requirements, not a declaration that the corresponding
 
 ## Session Updates
 
+### Session 004 — 2026-11-12
+
+- Goal: Plan the first guest-facing capability: identify the guest's current booking at Nolita or Nap York through Mews.
+- Created `plans/pending/guest-identification-and-booking-lookup.md` for explicit review and approval. No feature code or feature tracking definitions were changed.
+- Inspected existing backend, voice-agent, Mews integration placeholder, configuration, prompts, architecture, and tracking artifacts.
+- Ran `./init.sh` successfully. It emitted expected pip DNS retry warnings while dependencies were already installed; initialization completed.
+- Baseline verification: backend pytest 2 passed; voice-agent pytest 6 passed; web lint, typecheck, and production build passed.
+- Reviewed current official Mews Connector API documentation. It specifies `ClientToken`, `AccessToken`, and `Client` request-body authentication; reservation lookup supports confirmation `Numbers` and scheduled-start filters. Mews describes customer search as limited to customers active at the moment.
+- Open plan questions include whether the supplied `service_token` is Mews `ClientToken`, property endpoint/timezone configuration, backend agent authentication, name-to-customer lookup access, and how to interpret prior-day check-in/current booking.
+- Approval state: waiting for explicit approval of the pending plan. Feature tracking remains unchanged until approval.
+
+### Session 005 — 2026-11-12
+
+- Goal: Implement the approved guest identification and current booking lookup feature.
+- User approved the pending plan, specified that Mews uses `ClientToken` (alongside the required `AccessToken`), and confirmed both properties use `America/New_York`.
+- Moved the plan to `plans/approved/guest-identification-and-booking-lookup.md` and added `BOOKING-001` to `feature-list.json`.
+- Implemented the authenticated backend lookup API, property-scoped Mews Connector client, strict request/response schemas, deterministic exact-name and confirmation-number matching, trusted LiveKit property context, agent tool, prompt flow, and setup documentation.
+- Verification: backend `.venv` pytest — 27 passed (one Starlette/httpx deprecation warning); voice-agent `.venv` pytest — 11 passed; web lint, typecheck, and Webpack production build — passed. `./init.sh` completed successfully earlier in this implementation session.
+- No live Mews request was made because the per-property API URLs and credentials remain unconfigured. `BOOKING-001` remains `in_progress` until the live connector contract and property access can be verified.
+
 Append a new numbered session entry for every development session.
 
 Do not overwrite historical session records.
