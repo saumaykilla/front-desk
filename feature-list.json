@@ -1,0 +1,47 @@
+{
+  "project": "front-desk-agent",
+  "last_updated": "2026-11-12",
+  "rules": {
+    "single_active_feature": true,
+    "passing_requires_evidence": true,
+    "do_not_skip_verification": true,
+    "planning_required_before_implementation": true,
+    "explicit_approval_required": true
+  },
+  "status_legend": {
+    "not_started": "Work has not begun.",
+    "in_progress": "The feature is the current active task.",
+    "blocked": "Work cannot continue until a documented blocker is resolved.",
+    "passing": "Required verification has passed and evidence is recorded."
+  },
+  "features": [
+    {
+      "id": "HARNESS-001",
+      "priority": 1,
+      "area": "engineering-harness",
+      "title": "Establish repository engineering harness",
+      "user_visible_behavior": "Coding agents can consistently initialize the repository, follow planning and approval gates, track implementation progress, verify changes, and hand off work between sessions.",
+      "status": "passing",
+      "verification": [
+        "AGENTS.md defines mandatory startup and planning workflows.",
+        "AGENTS.md requires explicit user approval before feature implementation.",
+        "feature_list.json tracks approved features and their verification evidence.",
+        "progress.md records verified development progress.",
+        "session-handoff.md provides actionable instructions for the next session.",
+        "init.sh establishes a reproducible startup and verification path.",
+        "A new coding session can reconstruct project state using repository artifacts."
+      ],
+      "evidence": [
+        "./init.sh completed after network-enabled dependency installation.",
+        "backend pytest: 2 passed; FastAPI app import passed.",
+        "voice-agent pytest: 6 passed; installed Google plugin import/signature inspected.",
+        "web npm run typecheck passed.",
+        "web npm run lint passed.",
+        "web npm run build failed in sandbox: Turbopack could not spawn/bind a process (Operation not permitted).",
+        "cd web && npm run build \u2014 passed using Next.js Webpack builder; Turbopack was blocked by process/port permissions."
+      ],
+      "notes": "Approved foundation setup verified. Web build script uses the supported Webpack builder because Turbopack cannot create its worker process in this environment.",
+      "plan": "plans/approved/application-foundation.md"
+    }
+  ]
+}
