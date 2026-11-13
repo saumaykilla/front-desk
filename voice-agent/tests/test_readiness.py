@@ -2,9 +2,12 @@
 
 import json
 
+from livekit.agents import AgentServer
+
 from config.settings import assess_readiness
 from prompts import load_system_prompt
 from tools import load_tools
+from agent import entrypoint, server
 from worker import main
 
 
@@ -39,6 +42,11 @@ def test_readiness_is_ready_when_required_values_are_present() -> None:
     assert report.ready is True
     assert report.missing == []
     assert report.livekit_connected is False
+
+
+def test_agent_module_exposes_canonical_livekit_entrypoint() -> None:
+    assert isinstance(server, AgentServer)
+    assert callable(entrypoint)
 
 
 def test_blank_values_count_as_missing() -> None:

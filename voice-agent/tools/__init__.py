@@ -17,13 +17,13 @@ def make_find_guest_booking_tool(
         context: RunContext,
         check_in_date: str,
         full_name: str | None = None,
-        confirmation_number: str | None = None,
+        booking_reference: str | None = None,
     ) -> dict[str, object]:
-        """Find a current booking using a guest-confirmed full name or confirmation number and check-in date."""
+        """Find a current booking using a guest-confirmed full name or booking confirmation/reference number and check-in date."""
 
         del context
-        if (full_name is None) == (confirmation_number is None):
-            raise ToolError("Provide either a guest full name or a confirmation number, not both.")
+        if (full_name is None) == (booking_reference is None):
+            raise ToolError("Provide either a guest full name or booking confirmation/reference number, not both.")
         if property_id not in SUPPORTED_PROPERTIES:
             return {"outcome": "unavailable", "matches": []}
         try:
@@ -34,14 +34,14 @@ def make_find_guest_booking_tool(
             raise ToolError("Check-in date must use YYYY-MM-DD. Ask the guest to confirm the date.") from exc
 
         normalized_name = full_name.strip() if full_name is not None else None
-        normalized_number = confirmation_number.strip() if confirmation_number is not None else None
+        normalized_number = booking_reference.strip() if booking_reference is not None else None
         if normalized_name == "" or normalized_number == "":
             raise ToolError("The guest lookup detail is empty. Ask the guest to repeat it.")
         try:
             return await backend_client.lookup_booking(
                 property_id=property_id,
                 full_name=normalized_name,
-                confirmation_number=normalized_number,
+                booking_reference=normalized_number,
                 check_in_date=requested_date,
             )
         except BookingBackendUnavailable:

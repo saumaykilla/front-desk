@@ -23,7 +23,7 @@ class BookingBackendClient:
         *,
         property_id: str,
         full_name: str | None,
-        confirmation_number: str | None,
+        booking_reference: str | None,
         check_in_date: date,
     ) -> dict[str, object]:
         if not self._base_url or not self._api_token:
@@ -39,8 +39,8 @@ class BookingBackendClient:
         }
         if full_name is not None:
             payload["full_name"] = full_name
-        if confirmation_number is not None:
-            payload["confirmation_number"] = confirmation_number
+        if booking_reference is not None:
+            payload["booking_reference"] = booking_reference
 
         try:
             response = await self._http_client.post(

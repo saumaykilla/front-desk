@@ -73,7 +73,7 @@ class GuestBookingService:
         if not matches:
             return GuestBookingLookupResponse(outcome=LookupOutcome.NO_MATCH)
         if len(matches) > 1:
-            if request.confirmation_number is not None:
+            if request.booking_reference is not None:
                 matches = [
                     GuestBookingMatch(
                         guest_name=None,

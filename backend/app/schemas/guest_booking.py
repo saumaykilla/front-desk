@@ -19,7 +19,7 @@ class GuestBookingLookupRequest(BaseModel):
 
     property: BookingProperty
     full_name: str | None = Field(default=None, max_length=200)
-    confirmation_number: str | None = Field(default=None, max_length=100)
+    booking_reference: str | None = Field(default=None, max_length=100)
     check_in_date: date
 
     @field_validator("check_in_date")
@@ -30,7 +30,7 @@ class GuestBookingLookupRequest(BaseModel):
             raise ValueError("check_in_date cannot be in the future")
         return value
 
-    @field_validator("full_name", "confirmation_number")
+    @field_validator("full_name", "booking_reference")
     @classmethod
     def strip_lookup_value(cls, value: str | None) -> str | None:
         if value is None:
@@ -40,8 +40,8 @@ class GuestBookingLookupRequest(BaseModel):
 
     @model_validator(mode="after")
     def require_one_lookup_key(self) -> "GuestBookingLookupRequest":
-        if (self.full_name is None) == (self.confirmation_number is None):
-            raise ValueError("provide exactly one of full_name or confirmation_number")
+        if (self.full_name is None) == (self.booking_reference is None):
+            raise ValueError("provide exactly one of full_name or booking_reference")
         return self
 
 

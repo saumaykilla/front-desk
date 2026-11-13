@@ -23,7 +23,7 @@ def test_lookup_request_requires_exactly_one_search_key() -> None:
         GuestBookingLookupRequest(
             property="nolita",
             full_name="Jordan Lee",
-            confirmation_number="00042",
+            booking_reference="00042",
             check_in_date="2026-11-12",
         )
 
@@ -32,23 +32,23 @@ def test_lookup_request_rejects_future_check_in_date() -> None:
     with pytest.raises(ValidationError):
         GuestBookingLookupRequest(
             property="nolita",
-            confirmation_number="42",
+            booking_reference="42",
             check_in_date="2999-01-01",
         )
 
 
-def test_lookup_request_preserves_confirmation_number_and_rejects_unknown_property() -> None:
+def test_lookup_request_preserves_booking_reference_and_rejects_unknown_property() -> None:
     request = GuestBookingLookupRequest(
         property="nap_york",
-        confirmation_number=" 00042-A ",
+        booking_reference=" 00042-A ",
         check_in_date="2026-11-12",
     )
 
-    assert request.confirmation_number == "00042-A"
+    assert request.booking_reference == "00042-A"
     with pytest.raises(ValidationError):
         GuestBookingLookupRequest(
             property="other",
-            confirmation_number="42",
+            booking_reference="42",
             check_in_date="2026-11-12",
         )
 
@@ -64,10 +64,10 @@ def test_property_configuration_keeps_nolita_and_nap_york_tokens_separate() -> N
     )
 
     nolita = settings.mews_property(GuestBookingLookupRequest(
-        property="nolita", confirmation_number="1", check_in_date="2026-11-12"
+        property="nolita", booking_reference="1", check_in_date="2026-11-12"
     ).property)
     nap_york = settings.mews_property(GuestBookingLookupRequest(
-        property="nap_york", confirmation_number="1", check_in_date="2026-11-12"
+        property="nap_york", booking_reference="1", check_in_date="2026-11-12"
     ).property)
 
     assert nolita is not None
@@ -132,7 +132,7 @@ def test_lookup_route_requires_backend_bearer_token(monkeypatch) -> None:
         "/guest-bookings/lookup",
         json={
             "property": "nolita",
-            "confirmation_number": "42",
+            "booking_reference": "42",
             "check_in_date": "2026-11-12",
         },
     )
@@ -150,7 +150,7 @@ def test_lookup_route_fails_closed_when_agent_token_is_not_configured(monkeypatc
         "/guest-bookings/lookup",
         json={
             "property": "nolita",
-            "confirmation_number": "42",
+            "booking_reference": "42",
             "check_in_date": "2026-11-12",
         },
         headers={"Authorization": "Bearer arbitrary"},
@@ -265,7 +265,7 @@ async def test_service_returns_unavailable_when_property_credentials_are_incompl
     result = await service.lookup(
         GuestBookingLookupRequest(
             property="nap_york",
-            confirmation_number="42",
+            booking_reference="42",
             check_in_date="2026-11-12",
         )
     )

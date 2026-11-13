@@ -47,7 +47,7 @@ async def test_tool_injects_property_without_exposing_it_as_a_model_argument() -
         {
             "property_id": "nap_york",
             "full_name": "Jordan Lee",
-            "confirmation_number": None,
+            "booking_reference": None,
             "check_in_date": date(2026, 11, 12),
         }
     ]
@@ -64,12 +64,12 @@ async def test_missing_property_and_backend_failure_never_claim_no_match() -> No
     missing_property = await no_property_tool._func(
         None,
         check_in_date="2026-11-12",
-        confirmation_number="00042",
+        booking_reference="00042",
     )
     backend_failure = await unavailable_tool._func(
         None,
         check_in_date="2026-11-12",
-        confirmation_number="00042",
+        booking_reference="00042",
     )
 
     assert missing_property["outcome"] == "unavailable"
@@ -124,7 +124,7 @@ async def test_backend_client_sends_bearer_and_only_returns_whitelisted_fields(m
     result = await client.lookup_booking(
         property_id="nolita",
         full_name="Jordan Lee",
-        confirmation_number=None,
+        booking_reference=None,
         check_in_date=date(2026, 11, 12),
     )
     await client.aclose()

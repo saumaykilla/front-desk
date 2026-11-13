@@ -3,8 +3,11 @@
 from functools import lru_cache
 from typing import Mapping
 
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv(".env.local")
 
 REQUIRED_ENV_VARS = (
     "LIVEKIT_URL",
@@ -25,7 +28,7 @@ class Settings(BaseSettings):
     google_api_key: str = ""
     backend_api_url: str = ""
     backend_api_token: str = ""
-    google_realtime_model: str = ""
+    google_realtime_model: str = "gemini-3.8-live"
     google_realtime_voice: str = "Puck"
     agent_name: str = "front-desk"
     log_level: str = "INFO"

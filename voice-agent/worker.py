@@ -10,28 +10,12 @@ import json
 import logging
 import sys
 
-from dotenv import load_dotenv
-from livekit.agents import AgentServer, JobContext, cli
+from livekit.agents import cli
 
-from config.property_context import property_from_job_metadata
+from agent import server
 from config.settings import assess_readiness, get_settings
-from session import start_session
-
-load_dotenv()
 
 logger = logging.getLogger("front-desk.voice-agent")
-
-
-def create_server() -> AgentServer:
-    settings = get_settings()
-    server = AgentServer(log_level=settings.log_level.lower())
-
-    @server.rtc_session(agent_name=settings.agent_name)
-    async def entrypoint(ctx: JobContext) -> None:
-        property_id = property_from_job_metadata(ctx.job.metadata)
-        await start_session(ctx, get_settings(), property_id)
-
-    return server
 
 
 def readiness_payload() -> dict[str, object]:
@@ -65,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(
             f"Missing required environment variables: {missing}. "
-            "Copy .env.example to .env and provide real credentials. "
+            "Copy .env.example to .env.local and provide real credentials. "
             "No LiveKit or Google connection was attempted.",
             file=sys.stderr,
         )
@@ -73,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if argv is not None:
         sys.argv = [sys.argv[0], *argv]
-    cli.run_app(create_server())
+    cli.run_app(server)
     return 0
 
 

@@ -14,7 +14,7 @@ The Mews URL is the environment's platform base address (without a path). Use HT
 
 ## Request behavior
 
-The authenticated request contains a property slug (`nolita` or `nap_york`), exactly one of `full_name` / `confirmation_number`, and the guest-confirmed local `check_in_date` (`YYYY-MM-DD`). The backend uses `America/New_York` for both properties. Results distinguish `matched`, `no_match`, `ambiguous`, and `unavailable`; the response omits Mews reservation IDs and raw PMS data.
+The authenticated request contains a property slug (`nolita` or `nap_york`), exactly one of `full_name` / `booking_reference`, and the guest-confirmed local `check_in_date` (`YYYY-MM-DD`). A booking reference is searched against both Mews reservation numbers and channel numbers. The backend uses `America/New_York` for both properties. Results distinguish `matched`, `no_match`, `ambiguous`, and `unavailable`; the response omits Mews reservation IDs and raw PMS data.
 
 The backend uses the read-only Mews Connector API reservation, customer, and companionship operations. It does not authenticate the guest for check-in or authorize any reservation changes.
 

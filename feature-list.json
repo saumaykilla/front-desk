@@ -54,7 +54,8 @@
         "Backend unit and route tests: 27 passed.",
         "Voice-agent tool and readiness tests: 11 passed.",
         "Web lint, typecheck, and production build passed.",
-        "Live Mews smoke test remains outstanding because property API URLs and credentials are not configured."
+        "Credentialed Nap York read-only smoke tests completed: name lookup matched one Confirmed reservation; supplied confirmation-number lookup returned no_match for the requested date.",
+        "Nolita smoke test and a positive confirmation-number match remain outstanding."
       ],
       "evidence": [
         "backend/.venv/bin/python -m pytest -q: 27 passed, 1 Starlette/httpx deprecation warning.",
@@ -63,18 +64,58 @@
         "cd web && npm run typecheck: passed.",
         "cd web && npm run build: passed with Webpack.",
         "./init.sh completed successfully earlier in this implementation session.",
-        "No live Mews API call was made; .env.example values are blank."
+        "Nap York Mews live API: name lookup produced one Confirmed match for 2026-11-12; exact normalized name matched.",
+        "Nap York Mews live API: confirmation-number lookup for 2026-11-12 returned no_match.",
+        "No guest name, confirmation number, Mews response body, or credential recorded in repository artifacts."
       ],
       "acceptance_criteria": [
         "The agent waits for trusted property context, one confirmed lookup key, and a confirmed check-in date before lookup.",
         "Name lookup reads back spelling for confirmation or asks the guest to spell an unclear name.",
         "The backend maps the allowlisted property to only its configured Mews credentials and rejects unauthorized agent requests.",
-        "Confirmation-number and exact normalized-name lookup return explicit matched, no-match, ambiguous, or unavailable outcomes.",
+        "Exact normalized-name lookup returns explicit matched, no-match, ambiguous, or unavailable outcomes.",
+        "A booking reference is searched independently against both Mews reservation Numbers and ChannelNumbers; duplicate reservation matches are merged.",
         "Current reservations include eligible Started or Confirmed bookings on the supplied New York local check-in date; cancelled and processed bookings are excluded.",
         "Mews credentials and raw responses are not exposed in frontend, voice output, or logs.",
         "Automated backend and voice-agent tests pass, and setup/integration documentation is current."
       ],
-      "plan": "plans/approved/guest-identification-and-booking-lookup.md"
+      "plan": "plans/approved/guest-identification-and-booking-lookup.md",
+      "additional_plans": [
+        "plans/approved/booking-reference-number-lookup.md"
+      ]
+    },
+    {
+      "id": "VOICE-001",
+      "priority": 3,
+      "area": "livekit-agent",
+      "title": "Run the front-desk agent directly on Google GenAI",
+      "user_visible_behavior": "The front-desk voice agent runs as a discoverable LiveKit Agents entrypoint and uses the Google Gemini Live API directly with the configured Google API key, without silently switching to LiveKit Inference.",
+      "status": "in_progress",
+      "verification": [
+        "Voice-agent pytest: 16 passed.",
+        "Backend pytest: 29 passed with one Starlette/httpx deprecation warning.",
+        "Import check: agent.server is an AgentServer and agent.entrypoint is callable.",
+        "worker.py readiness: ready with no missing variables; connection status remains unverified by readiness by design.",
+        "Initial direct Google console attempt with the Google GenAI default v1 API returned HTTP 404; after explicitly setting v1beta, the direct Google console produced a Gemini response.",
+        "A booking lookup still needs verification through the normal frontend dispatch with trusted property metadata."
+      ],
+      "evidence": [
+        "User approved plans/approved/google-genai-agent-entrypoint.md on 2026-11-13.",
+        "LiveKit docs confirm that the Google plugin uses GOOGLE_API_KEY while LiveKit Inference uses LiveKit Cloud credentials.",
+        "Installed livekit-plugins-google version 1.8.11 accepts the configured model, api_key, api_version, vertexai, and voice parameters.",
+        "The working my-agent project uses gemini-3.8-live with api_version=v1beta and vertexai=False; google-genai 3.3.0 otherwise defaults to v1.",
+        "With api_version=v1beta, lk agent console --text agent.py received and answered a direct Google Gemini Live text turn; no Inference fallback occurred."
+      ],
+      "acceptance_criteria": [
+        "voice-agent/agent.py is the canonical discoverable LiveKit AgentServer entrypoint and supports both lk agent console agent.py and lk agent dev agent.py.",
+        "The runtime session uses livekit.plugins.google.realtime.RealtimeModel and GOOGLE_API_KEY; it does not import or instantiate LiveKit Inference.",
+        "The Google Gemini API model and voice are explicitly configurable with documented defaults.",
+        "Google authentication, model, quota, and network failures are visible and do not trigger a provider fallback.",
+        "Trusted property metadata, booking tools, New York date context, and worker readiness behavior remain intact.",
+        "Focused voice-agent tests, import/readiness checks, documentation, and env examples are updated and verified.",
+        "A direct Google console smoke test is recorded accurately; provider-access failure is documented without being reported as a pass.",
+        "Booking lookup is verified separately through frontend dispatch with trusted property metadata."
+      ],
+      "plan": "plans/approved/google-genai-agent-entrypoint.md"
     }
   ]
 }

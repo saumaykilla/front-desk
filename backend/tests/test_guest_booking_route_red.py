@@ -13,7 +13,7 @@ def test_guest_booking_lookup_rejects_missing_agent_token(monkeypatch) -> None:
         "/guest-bookings/lookup",
         json={
             "property": "nolita",
-            "confirmation_number": "42",
+            "booking_reference": "42",
             "check_in_date": "2026-11-12",
         },
     )

@@ -15,7 +15,7 @@ Guests interact with the agent through real-time voice conversations. The initia
 The application consists of three primary components:
 
 1. **Backend:** Python and FastAPI.
-2. **Voice Agent:** LiveKit Agents with Google's real-time model using google studio API Key.
+2. **Voice Agent:** LiveKit Agents with Google's Gemini Live API through the LiveKit Google plugin, `GOOGLE_API_KEY`, and explicit `v1beta` API version.
 3. **Web Application:** Next.js, TypeScript, and shadcn/ui.
 
 Mews is the initial PMS integration and source of truth for reservation and check-in/check-out information.
@@ -29,7 +29,7 @@ Payments and access-control integrations such as Seam are explicitly outside the
 | Backend               | Python, FastAPI                       |
 | Voice infrastructure  | LiveKit                               |
 | Voice agent           | LiveKit Agents for Python             |
-| AI model              | Google real-time model via Google API |
+| AI model              | Google Gemini Live API via `livekit-plugins-google` |
 | Frontend              | Next.js, TypeScript                   |
 | UI components         | shadcn/ui                             |
 | Backend communication | REST APIs                             |
@@ -155,7 +155,7 @@ Responsibilities:
 
 - Join and manage LiveKit rooms.
 - Process incoming and outgoing audio.
-- Connect to Google's real-time model through the Google API.
+- Connect to Google's Gemini Live API directly through the LiveKit Google plugin with `GOOGLE_API_KEY`; the runtime does not fall back to LiveKit Inference.
 - Maintain active conversation context.
 - Load prompts from `voice-agent/prompts/`.
 - Expose callable tools from `voice-agent/tools/`.
@@ -221,7 +221,7 @@ Initial proposed tools (only `find_guest_booking` is currently implemented):
 
 | Tool                    | Responsibility                                  |
 | ----------------------- | ----------------------------------------------- |
-| `find_guest_booking`   | Locate a current reservation using a confirmed name or confirmation number and check-in date |
+| `find_guest_booking`   | Locate a current reservation using a confirmed name or booking confirmation/reference number and check-in date |
 | `get_guest_reservation` | Retrieve reservation information                |
 | `verify_guest`          | Verify the guest's identity                     |
 | `get_checkin_status`    | Retrieve check-in status                        |

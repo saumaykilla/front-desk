@@ -1,30 +1,20 @@
-"""Front-desk voice agent definition."""
+"""Canonical LiveKit Agents entrypoint for the front-desk assistant."""
 
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from livekit.agents import AgentServer, JobContext, cli
 
-from livekit.agents import Agent
+from config.property_context import property_from_job_metadata
+from config.settings import get_settings
+from session import start_session
 
-from config.settings import Settings
-from prompts import load_system_prompt
-from tools import load_tools
-from tools.booking_client import BookingBackendClient
+settings = get_settings()
+server = AgentServer(log_level=settings.log_level.lower())
 
 
-class FrontDeskAgent(Agent):
-    """Conversation agent. It does not own reservations or PMS access."""
+@server.rtc_session(agent_name=settings.agent_name)
+async def entrypoint(ctx: JobContext) -> None:
+    property_id = property_from_job_metadata(ctx.job.metadata)
+    await start_session(ctx, get_settings(), property_id)
 
-    def __init__(self, settings: Settings, property_id: str | None) -> None:
-        local_date = datetime.now(ZoneInfo("America/New_York")).date()
-        self._backend_client = BookingBackendClient(
-            settings.backend_api_url,
-            settings.backend_api_token,
-        )
-        super().__init__(
-            instructions=load_system_prompt(local_date=local_date.isoformat()),
-            tools=list(load_tools(property_id=property_id, backend_client=self._backend_client)),
-        )
 
-    async def on_exit(self) -> None:
-        await self._backend_client.aclose()
-        await super().on_exit()
+if __name__ == "__main__":
+    cli.run_app(server)

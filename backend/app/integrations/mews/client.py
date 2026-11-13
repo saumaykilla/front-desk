@@ -98,10 +98,20 @@ class MewsConnectorClient:
             "ScheduledStartUtc": _utc_interval(request.check_in_date),
             "States": ["Confirmed", "Started"],
         }
-        if request.confirmation_number is not None:
-            filters["Numbers"] = [request.confirmation_number]
-
-        reservations = await self._get_all(MEWS_RESERVATIONS_PATH, filters, "Reservations")
+        if request.booking_reference is None:
+            reservations = await self._get_all(MEWS_RESERVATIONS_PATH, filters, "Reservations")
+        else:
+            reservations_by_id: dict[str, dict[str, Any]] = {}
+            for number_filter in ("Numbers", "ChannelNumbers"):
+                results = await self._get_all(
+                    MEWS_RESERVATIONS_PATH,
+                    {**filters, number_filter: [request.booking_reference]},
+                    "Reservations",
+                )
+                for reservation in results:
+                    reservation_id = self._required_string(reservation, "Id")
+                    reservations_by_id.setdefault(reservation_id, reservation)
+            reservations = list(reservations_by_id.values())
         reservations = [
             reservation
             for reservation in reservations
